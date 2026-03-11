@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskBoard.Data;
 using TaskBoard.Models;
+using BCrypt.Net;
 
 namespace TaskBoard.Controllers;
 
@@ -27,6 +28,26 @@ public class UserController : ControllerBase
     [HttpPost]
     public IActionResult CreateUser(User user)
     {
+        _context.Users.Add(user);
+        _context.SaveChanges();
+
+        return Ok(user);
+    }
+
+    // POST /api/users/register
+    [HttpPost("register")]
+    public IActionResult Register(User user)
+    {
+        var existingUser = _context.Users.FirstOrDefault(u => u.Email == user.Email);
+
+        if (existingUser != null)
+        {
+            return BadRequest("User already exists");
+        }
+
+        // hash du mot de passe
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
         _context.Users.Add(user);
         _context.SaveChanges();
 
