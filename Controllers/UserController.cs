@@ -36,17 +36,21 @@ public class UserController : ControllerBase
 
     // POST /api/users/register
     [HttpPost("register")]
-    public IActionResult Register(User user)
+    public IActionResult Register([FromBody] RegisterRequest request)
     {
-        var existingUser = _context.Users.FirstOrDefault(u => u.Email == user.Email);
+        var existingUser = _context.Users.FirstOrDefault(u => u.Email == request.Email);
 
         if (existingUser != null)
         {
             return BadRequest("User already exists");
         }
 
-        // hash du mot de passe
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+        var user = new User
+        {
+            Username = request.Username,
+            Email = request.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+        };
 
         _context.Users.Add(user);
         _context.SaveChanges();

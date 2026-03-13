@@ -1,0 +1,52 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using TaskBoard.Data;
+using TaskBoard.Models;
+
+namespace TaskBoard.Controllers;
+
+[ApiController]
+[Route("api/boards")]
+[Authorize]
+public class BoardController : ControllerBase
+{
+    private readonly AppDbContext _context;
+
+    public BoardController(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    // GET /api/boards
+    [HttpGet]
+    public IActionResult GetBoards()
+    {
+        var boards = _context.Boards.ToList();
+        return Ok(boards);
+    }
+
+    // POST /api/boards
+    [HttpPost]
+    public IActionResult CreateBoard(Board board)
+    {
+        _context.Boards.Add(board);
+        _context.SaveChanges();
+
+        return Ok(board);
+    }
+
+    // DELETE /api/boards/{id}
+    [HttpDelete("{id}")]
+    public IActionResult DeleteBoard(int id)
+    {
+        var board = _context.Boards.Find(id);
+
+        if (board == null)
+            return NotFound();
+
+        _context.Boards.Remove(board);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+}
