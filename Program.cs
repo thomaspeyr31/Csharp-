@@ -6,18 +6,14 @@ using TaskBoard.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers
 builder.Services.AddControllers();
 
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Base de données SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=taskboard.db"));
 
-// JWT configuration
 var key = builder.Configuration["Jwt:Key"];
 
 builder.Services.AddAuthentication(options =>
@@ -40,8 +36,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
-
-// Pipeline HTTP
 
 if (app.Environment.IsDevelopment())
 {
